@@ -81,32 +81,38 @@ def main():
 
 @bot.command()
 async def add(ctx, name, link):
-    print(crayons.yellow(f"Registering emoji [{name}] with [{link}]"))
-    emoji[name.strip()] = link.strip()
-    await ctx.message.delete()
+    try:
+        print(crayons.yellow(f"Registering emoji [{name}] with [{link}]"))
+        emoji[name.strip()] = link.strip()
+    finally:
+        await ctx.message.delete()
 
 
 @bot.command()
 async def delete(ctx, name):
-    name = name.strip()
-    if name in emoji:
-        print(crayons.yellow(f"Deleting emoji [{name}]"))
-        del emoji[name.strip()]
-    else:
-        print(crayons.red(f"There is no emoji named [{name}]"))
-    await ctx.message.delete()
+    try:
+        name = name.strip()
+        if name in emoji:
+            print(crayons.yellow(f"Deleting emoji [{name}]"))
+            del emoji[name.strip()]
+        else:
+            print(crayons.red(f"There is no emoji named [{name}]"))
+    finally:
+        await ctx.message.delete()
 
 
 @bot.command()
-async def rename(ctx, orginal, newname):
-    original = original.strip()
-    if name in emoji:
-        print(crayons.yellow(f"Renaming emoji [{original}] to [{newname.strip()}]"))
-        emoji[newname.strip()] = emoji[original]
-        del emoji[original]
-    else:
-        print(crayons.red(f"There is no emoji named [{original}]"))
-    await ctx.message.delete()
+async def rename(ctx, original, newname):
+    try:
+        original = original.strip()
+        if original in emoji:
+            print(crayons.yellow(f"Renaming emoji [{original}] to [{newname.strip()}]"))
+            emoji[newname.strip()] = emoji[original]
+            del emoji[original]
+        else:
+            print(crayons.red(f"There is no emoji named [{original}]"))
+    finally:
+        await ctx.message.delete()
 
 
 @bot.command()
@@ -121,7 +127,8 @@ async def size(ctx, size: Optional[str]):
                 print(crayons.red(f"[{size}] is not a power of two"))
         except:
             print(crayons.red(f"[{size}] is not a number"))
-        await ctx.message.delete()
+        finally:
+            await ctx.message.delete()
     else:
         await ctx.send(f"Emoji size is [{config['selfmoji']['size']}]")
 
@@ -129,7 +136,7 @@ async def size(ctx, size: Optional[str]):
 @bot.command(aliases=["list"])
 async def _list(ctx):
     # await ctx.message.delete()
-    await ctx.send(f"There are `[{len(emoji)}]` emojis: `{list(emoji.keys())}`")
+    awat ctx.send(f"There are `[{len(emoji)}]` emojis: `{list(emoji.keys())}`")
 
 
 @bot.event
