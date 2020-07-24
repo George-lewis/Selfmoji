@@ -136,7 +136,7 @@ async def size(ctx, size: Optional[str]):
 @bot.command(aliases=["list"])
 async def _list(ctx):
     # await ctx.message.delete()
-    awat ctx.send(f"There are `[{len(emoji)}]` emojis: `{list(emoji.keys())}`")
+    await ctx.send(f"There are `[{len(emoji)}]` emojis: `{list(emoji.keys())}`")
 
 
 @bot.event
