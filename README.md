@@ -19,3 +19,9 @@ The command is ```add [emoji-name] [link]`
 ![laugh](https://i.imgur.com/fuCfyS2.gif)
 
 ![console](https://i.imgur.com/YAsz9oC.png)
+
+## Share Emojis
+
+Selfmoji saves emoji in a file called `emojis.dict` in the format `emoji-name : link`
+
+You can add emojis here manually and share with friends
