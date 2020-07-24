@@ -76,7 +76,7 @@ async def on_message(message):
     if message.author != bot.user:
         return
 
-    if not re.match("`.+`", message.content):
+    if not re.match("`\w+`", message.content):
         await bot.process_commands(message)
         return
 
