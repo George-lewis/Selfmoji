@@ -140,6 +140,11 @@ async def _list(ctx):
 
 
 @bot.event
+async def on_command_error(ctx, error):
+    print(crayons.red(error))
+    await ctx.message.delete()
+
+@bot.event
 async def on_ready():
     print(crayons.green("ready!"))
 
