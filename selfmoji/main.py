@@ -159,7 +159,7 @@ async def _list(ctx):
 @bot.event
 async def on_command_error(ctx, error):
     print(crayons.red(error))
-    await ctx.message.delete()
+    # await ctx.message.delete()
 
 
 @bot.event
