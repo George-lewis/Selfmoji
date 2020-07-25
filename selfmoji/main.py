@@ -85,6 +85,13 @@ def main():
         print(crayons.red("SAVING CONFIG"))
         save_config()
 
+@bot.command()
+async def flush(ctx):
+    try:
+        save_emojis()
+        print(crayons.green("Saved emojis"))
+    finally:
+        await ctx.message.delete()
 
 @bot.command()
 async def add(ctx, name, link):
@@ -112,7 +119,10 @@ async def delete(ctx, name):
 async def rename(ctx, original, newname):
     try:
         original = original.strip()
-        if original in emoji:
+        newname = newname.strip()
+        if newname in emoji:
+            print(crayons.red(f"Emoji [{newname}] already exists!"))
+        elif original in emoji:
             print(crayons.yellow(f"Renaming emoji [{original}] to [{newname.strip()}]"))
             emoji[newname.strip()] = emoji[original]
             del emoji[original]
@@ -137,7 +147,7 @@ async def size(ctx, size: Optional[str]):
         finally:
             await ctx.message.delete()
     else:
-        await ctx.send(f"Emoji size is [{config('size')}]")
+        await ctx.send(f"Emoji size is `[{config('size')}]`")
 
 
 @bot.command(aliases=["list"])
@@ -162,16 +172,29 @@ async def on_message(message):
     if message.author != bot.user:
         return
 
-    if not re.match("`\w+`", message.content):
+    if not re.match("`[\w ]+`", message.content):
         await bot.process_commands(message)
         return
 
     content = message.content.strip().replace("`", "").strip()
 
+    print(content)
+
+    size = config().getint('size')
+
+    if len(spl := content.split(' ')) == 2:
+        try:
+            print(spl)
+            size = int(spl[1])
+            content = spl[0]
+        except Exception as e:
+            print(e)
+            print(crayons.red("uh oh.."))
+
     if content not in emoji:
         return
 
-    e = emoji[content] + f"&size={config().getint('size')}"
+    e = emoji[content] + f"&size={size}"
 
     if config().getboolean("edit"):
 
