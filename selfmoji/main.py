@@ -13,11 +13,13 @@ emoji = {}
 
 config_parser = ConfigParser()
 
+
 def config(attr: Optional[str] = None):
     if attr:
-        return config_parser['selfmoji'][attr]
+        return config_parser["selfmoji"][attr]
     else:
-        return config_parser['selfmoji']
+        return config_parser["selfmoji"]
+
 
 def save_emojis():
     with open("emojis.dict", "w") as file:
@@ -148,6 +150,7 @@ async def _list(ctx):
 async def on_command_error(ctx, error):
     print(crayons.red(error))
     await ctx.message.delete()
+
 
 @bot.event
 async def on_ready():
