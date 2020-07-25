@@ -11,8 +11,13 @@ bot = commands.Bot(command_prefix="``", self_bot=True)
 
 emoji = {}
 
-config = ConfigParser()
+config_parser = ConfigParser()
 
+def config(attr: Optional[str] = None):
+    if attr:
+        return config_parser['selfmoji'][attr]
+    else:
+        return config_parser['selfmoji']
 
 def save_emojis():
     with open("emojis.dict", "w") as file:
@@ -29,11 +34,11 @@ def read_emojis():
 
 def save_config():
     with open("config.ini", "w") as file:
-        config.write(file)
+        config_parser.write(file)
 
 
 def read_config():
-    config.read("config.ini")
+    config_parser.read("config.ini")
 
 
 def token() -> str:
@@ -56,11 +61,11 @@ def main():
 
     print(crayons.green("Read config file"))
 
-    print(crayons.green(f"Emoji size: [{config['selfmoji'].getint('size')}]"))
+    print(crayons.green(f"Emoji size: [{config().getint('size')}]"))
 
     print(
         crayons.green(
-            f"Message editing is {'enabled' if config['selfmoji'].getboolean('edit') else 'disabled'}"
+            f"Message editing is {'enabled' if config().getboolean('edit') else 'disabled'}"
         )
     )
 
@@ -83,7 +88,7 @@ def main():
 async def add(ctx, name, link):
     try:
         print(crayons.yellow(f"Registering emoji [{name}] with [{link}]"))
-        emoji[name.strip()] = link.strip()
+        emoji[name.strip()] = re.sub("&size=\d{2,3}", "", link.strip())
     finally:
         await ctx.message.delete()
 
@@ -122,7 +127,7 @@ async def size(ctx, size: Optional[str]):
             _size = int(size)
             if _size % 2 == 0:
                 print(crayons.yellow(f"Setting emoji size to {size}"))
-                config["selfmoji"]["size"] = size
+                config()["size"] = size
             else:
                 print(crayons.red(f"[{size}] is not a power of two"))
         except:
@@ -130,7 +135,7 @@ async def size(ctx, size: Optional[str]):
         finally:
             await ctx.message.delete()
     else:
-        await ctx.send(f"Emoji size is [{config['selfmoji']['size']}]")
+        await ctx.send(f"Emoji size is [{config('size')}]")
 
 
 @bot.command(aliases=["list"])
@@ -163,9 +168,9 @@ async def on_message(message):
     if content not in emoji:
         return
 
-    e = emoji[content] + f"&size={config['selfmoji'].getint('size')}"
+    e = emoji[content] + f"&size={config().getint('size')}"
 
-    if config["selfmoji"].getboolean("edit"):
+    if config().getboolean("edit"):
 
         await message.edit(content=e)
 
