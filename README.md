@@ -6,6 +6,13 @@ Do you like Discord? Do you like using emojis? Do you not like paying for Nitro:
 
 With selfmoji you can have your own custom emojis in Discord.
 
+## Installing
+
+1. Clone repository
+2. `pipenv sync`
+3. Place your discord token in a file named `TOKEN` or into an environment variable named `DISCORD_TOKEN`
+4. Run the appropriate run script
+
 ## Sending emojis
 
 send ``[emoji-name]`` or ``[emoji-name] [size]`` where `[size]` is one of `16, 32, 64, ..., 512`
