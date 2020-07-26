@@ -53,7 +53,10 @@ def save_config():
 
 
 def read_config():
-    config_parser.read("config.ini")
+    if os.path.isfile("config.ini"):
+        config_parser.read("config.ini")
+    else:
+        raise EnvironmentError("File [config.ini] does not exist, not loading")
 
 
 def token() -> str:
@@ -71,9 +74,17 @@ def main():
 
     print(crayons.green("Starting"))
 
-    read_config()
+    try:
+        read_config()
 
-    print(crayons.green("Read config file"))
+        print(crayons.green("Read config file"))
+    except EnvironmentError as enve:
+        print(crayons.yellow(enve))
+        print(crayons.yellow("Setting defaults..."))
+        config_parser['selfmoji'] = {
+            'size': '64',
+            'edit': 'yes'
+        }
 
     print(crayons.green(f"Emoji size: [{config().getint('size')}]"))
 
