@@ -15,6 +15,7 @@ config_parser = ConfigParser()
 
 sizes = [16, 32, 64, 128, 256]
 
+
 def to_int(s: str) -> int:
     try:
         i = int(s)
@@ -24,6 +25,7 @@ def to_int(s: str) -> int:
         return i
     else:
         raise ValueError(f"[{s}] is not in {sizes}")
+
 
 def config(attr: Optional[str] = None):
     if attr:
@@ -102,6 +104,7 @@ def main():
         print(crayons.red("SAVING CONFIG"))
         save_config()
 
+
 @bot.command()
 async def flush(ctx):
     try:
@@ -109,6 +112,7 @@ async def flush(ctx):
         print(crayons.green("Saved emojis"))
     finally:
         await ctx.message.delete()
+
 
 @bot.command()
 async def add(ctx, name, link):
@@ -171,12 +175,16 @@ async def _list(ctx):
     # await ctx.message.delete()
     await ctx.send(f"There are `[{len(emojis)}]` emojis: `{list(emojis.keys())}`")
 
+
 @bot.command()
 async def slist(ctx):
     try:
-        print(crayons.cyan(f"There are `[{len(emojis)}]` emojis: `{list(emojis.keys())}`"))
+        print(
+            crayons.cyan(f"There are `[{len(emojis)}]` emojis: `{list(emojis.keys())}`")
+        )
     finally:
         await ctx.message.delete()
+
 
 @bot.event
 async def on_command_error(ctx, error):
@@ -193,13 +201,13 @@ async def on_message(message):
     if message.author != bot.user:
         return
 
-    async def do_emoji(content, size = None):
+    async def do_emoji(content, size=None):
 
         if content not in emojis:
             return
 
         if not size:
-            size = config().getint('size')
+            size = config().getint("size")
 
         emoji = emojis[content] + f"&size={size}"
 
