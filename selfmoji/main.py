@@ -195,14 +195,13 @@ async def edit(ctx, opt: Optional[bool] = None):
 
 @bot.command(aliases=["list"])
 async def _list(ctx):
-    # await ctx.message.delete()
-    await ctx.send(f"There are `[{len(emojis)}]` emojis: `{list(emojis.keys())}`")
+    await ctx.message.edit(f"There are `[{len(emojis)}]` emojis: ```{', '.join(emojis.keys())}```")
 
 
 @bot.command()
 async def slist(ctx):
     try:
-        print(crayons.cyan(f"There are [{len(emojis)}] emojis: {list(emojis.keys())}"))
+        print(crayons.cyan(f"There are [{len(emojis)}] emojis: {', '.join(emojis.keys())}"))
     finally:
         await ctx.message.delete()
 
