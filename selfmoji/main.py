@@ -6,13 +6,17 @@ from typing import Optional
 import crayons
 from discord.ext import commands
 
+TOKEN_ENV_KEY = "DISCORD_TOKEN"
+TOKEN_FILE = "TOKEN"
+EMOJI_FILE = "emojis.dict"
+CONFIG_FILE = "config.ini"
+SIZES = {16, 32, 64, 128, 256, 512}
+
 bot = commands.Bot(command_prefix="``", self_bot=True)
 
 emojis = {}
 
 config_parser = ConfigParser()
-
-sizes = [16, 32, 64, 128, 256, 512]
 
 
 def to_int(s: str) -> int:
@@ -20,9 +24,9 @@ def to_int(s: str) -> int:
         i = int(s)
     except:
         raise ValueError(f"[{s}] is not a number")
-    if i in sizes:
+    if i in SIZES:
         return i
-    raise ValueError(f"[{s}] is not in {sizes}")
+    raise ValueError(f"[{s}] is not in {SIZES}")
 
 
 def config(attr: Optional[str] = None):
@@ -32,42 +36,42 @@ def config(attr: Optional[str] = None):
 
 
 def save_emojis():
-    with open("emojis.dict", "w") as file:
+    with open(EMOJI_FILE, "w") as file:
         for k, v in emojis.items():
             file.write(f"{k} : {v}\n")
 
 
 def read_emojis():
-    if os.path.isfile("emojis.dict"):
-        with open("emojis.dict", "r") as file:
+    try:
+        with open(EMOJI_FILE, "r") as file:
             for line in file:
                 k, v = line.strip().split(" : ")
                 emojis[k] = v
-    else:
-        raise EnvironmentError("File [emojis.dict] does not exist, not loading")
+    except FileNotFoundError:
+        raise EnvironmentError(f"File [{EMOJI_FILE}] does not exist, not loading")
 
 
 def save_config():
-    with open("config.ini", "w") as file:
+    with open(CONFIG_FILE, "w") as file:
         config_parser.write(file)
 
 
 def read_config():
-    if os.path.isfile("config.ini"):
-        config_parser.read("config.ini")
+    if os.path.isfile(CONFIG_FILE):
+        config_parser.read(CONFIG_FILE)
     else:
-        raise EnvironmentError("File [config.ini] does not exist, not loading")
+        raise EnvironmentError(f"File [{CONFIG_FILE}] does not exist, not loading")
 
 
 def token() -> str:
-    if tok := os.getenv("DISCORD_TOKEN"):
+    if tok := os.getenv(TOKEN_ENV_KEY):
         print(crayons.green("Loading token from environment"))
         return tok
-    if os.path.isfile("TOKEN"):
+    if os.path.isfile(TOKEN_FILE):
         print(crayons.green("Loading token from file"))
-        with open("TOKEN", "r") as file:
+        with open(TOKEN_FILE, "r") as file:
             return file.read().strip()
-    raise ValueError("Bruh")
+    raise ValueError("Could not get token")
 
 
 def main():
