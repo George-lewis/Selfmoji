@@ -4,7 +4,6 @@ from configparser import ConfigParser
 from typing import Optional
 
 import crayons
-import discord
 from discord.ext import commands
 
 bot = commands.Bot(command_prefix="``", self_bot=True)
@@ -60,9 +59,9 @@ def read_config():
 
 
 def token() -> str:
-    if token := os.getenv("DISCORD_TOKEN"):
+    if tok := os.getenv("DISCORD_TOKEN"):
         print(crayons.green("Loading token from environment"))
-        return token
+        return tok
     elif os.path.isfile("TOKEN"):
         print(crayons.green("Loading token from file"))
         with open("TOKEN", "r") as file:
@@ -154,16 +153,14 @@ async def rename(ctx, original, newname):
 
 
 @bot.command()
-async def size(ctx, size: Optional[str]):
-    if size:
+async def size(ctx, _size: Optional[str]):
+    if _size:
         try:
-            _size = to_int(size)
-            print(crayons.yellow(f"Setting emoji size to {size}"))
-            config()["size"] = size
+            __size = to_int(size)
+            print(crayons.yellow(f"Setting emoji size to {__size}"))
+            config()["size"] = __size
         except ValueError as ve:
             print(crayons.red(f"Error parsing input: {ve}"))
-        except Exception as e:
-            print(crayons.red(f"An exception occured: {e}"))
         finally:
             await ctx.message.delete()
     else:
@@ -201,15 +198,15 @@ async def on_message(message):
     if message.author != bot.user:
         return
 
-    async def do_emoji(content, size=None):
+    async def do_emoji(content, _size=None):
 
         if content not in emojis:
             return
 
-        if not size:
-            size = config().getint("size")
+        if not _size:
+            _size = config().getint("size")
 
-        emoji = emojis[content] + f"&size={size}"
+        emoji = emojis[content] + f"&size={_size}"
 
         if config().getboolean("edit"):
 
@@ -227,7 +224,7 @@ async def on_message(message):
         try:
             await do_emoji(match.group(1), to_int(match.group(2)))
         except Exception as e:
-            if type(e) == ValueError:
+            if isinstance(e, ValueError):
                 print(crayons.red(f"Error parsing input: {e}"))
             else:
                 print(crayons.red(f"Unknown exception: {e}"))
