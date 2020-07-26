@@ -11,7 +11,7 @@ With selfmoji you can have your own custom emojis in Discord.
 1. Clone repository
 2. `pipenv sync`
 3. Place your discord token in a file named `TOKEN` or into an environment variable named `DISCORD_TOKEN`
-  3.1 How do I get my token?: [Guide](https://github.com/Tyrrrz/DiscordChatExporter/wiki/Obtaining-Token-and-Channel-IDs)
+    - How do I get my token?: [Guide](https://github.com/Tyrrrz/DiscordChatExporter/wiki/Obtaining-Token-and-Channel-IDs)
 4. Run the appropriate run script
 
 ## Sending emojis
