@@ -41,7 +41,7 @@ The bot uses the prefix `` as it's not likely to collide with anything else
 
 ### Add Emoji
 
-``add [emoji-name] [emoji-link]
+``` ``add [emoji-name] [emoji-link] ```
 
 e.g. ``add sparklecat https://cdn.discordapp.com/emojis/654099753340239872.gif
 
@@ -49,44 +49,44 @@ e.g. ``add sparklecat https://cdn.discordapp.com/emojis/654099753340239872.gif
 
 ### Delete Emoji
 
-``remove [emoji-name]
+``` ``remove [emoji-name] ```
 
 ### Rename Emoji
 
-``rename [current-name] [new-name]
+``` ``rename [current-name] [new-name] ```
 
 ### List Available Emoji
 
-``list
+``` ``list ```
 
 > Sends a message into the current chat listing all the emojis
 
-``slist
+``` ``slist ```
 
 > **S**ilent list, sends a list of all emoji into the console
 
 ### Set Emoji Size
 
-``size [pixel-size]
+``` ``size [pixel-size] ```
 
 Where `[pixel-size]` is one of `16, 32, 64, 128, 256, 512`
 
 ### Get the current size
 
-``size
+``` ``size ```
 
 > Sends a message to the current chat
 
 ### Enable / Disable Message Editing
 
-``edit
+``` ``edit ```
 
 > Toggles editing
 
-``edit [true|yes|on]
+``` ``edit [true|yes|on] ```
 
 > Enables editing
 
-``edit [false|no|off]
+``` ``edit [false|no|off] ```
 
 > Disables editing
