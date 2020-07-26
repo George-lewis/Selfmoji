@@ -191,9 +191,7 @@ async def _list(ctx):
 @bot.command()
 async def slist(ctx):
     try:
-        print(
-            crayons.cyan(f"There are `[{len(emojis)}]` emojis: `{list(emojis.keys())}`")
-        )
+        print(crayons.cyan(f"There are [{len(emojis)}] emojis: {list(emojis.keys())}"))
     finally:
         await ctx.message.delete()
 
