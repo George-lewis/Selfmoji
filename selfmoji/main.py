@@ -12,7 +12,7 @@ emojis = {}
 
 config_parser = ConfigParser()
 
-sizes = [16, 32, 64, 128, 256]
+sizes = [16, 32, 64, 128, 256, 512]
 
 
 def to_int(s: str) -> int:
@@ -22,15 +22,13 @@ def to_int(s: str) -> int:
         raise ValueError(f"[{s}] is not a number")
     if i in sizes:
         return i
-    else:
-        raise ValueError(f"[{s}] is not in {sizes}")
+    raise ValueError(f"[{s}] is not in {sizes}")
 
 
 def config(attr: Optional[str] = None):
     if attr:
         return config_parser["selfmoji"][attr]
-    else:
-        return config_parser["selfmoji"]
+    return config_parser["selfmoji"]
 
 
 def save_emojis():
@@ -62,12 +60,11 @@ def token() -> str:
     if tok := os.getenv("DISCORD_TOKEN"):
         print(crayons.green("Loading token from environment"))
         return tok
-    elif os.path.isfile("TOKEN"):
+    if os.path.isfile("TOKEN"):
         print(crayons.green("Loading token from file"))
         with open("TOKEN", "r") as file:
             return file.read().strip()
-    else:
-        raise ValueError("Bruh")
+    raise ValueError("Bruh")
 
 
 def main():
@@ -153,7 +150,7 @@ async def rename(ctx, original, newname):
 
 
 @bot.command()
-async def size(ctx, _size: Optional[str]):
+async def size(ctx, _size: Optional[str] = None):
     if _size:
         try:
             __size = to_int(size)
@@ -165,6 +162,24 @@ async def size(ctx, _size: Optional[str]):
             await ctx.message.delete()
     else:
         await ctx.send(f"Emoji size is `[{config('size')}]`")
+
+
+@bot.command()
+async def edit(ctx, opt: Optional[bool] = None):
+    try:
+        if opt is None:
+            if config().getboolean("edit"):
+                config()["edit"] = "no"
+            else:
+                config()["edit"] = "yes"
+        else:
+            if opt:
+                config()["edit"] = "yes"
+            else:
+                config()["edit"] = "no"
+    finally:
+        print(crayons.cyan(f"Changed edit to [{config().getboolean('edit')}]"))
+        await ctx.message.delete()
 
 
 @bot.command(aliases=["list"])
