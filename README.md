@@ -11,11 +11,16 @@ With selfmoji you can have your own custom emojis in Discord.
 1. Clone repository
 2. `pipenv sync`
 3. Place your discord token in a file named `TOKEN` or into an environment variable named `DISCORD_TOKEN`
+    - How do I get my token?: [Guide](https://github.com/Tyrrrz/DiscordChatExporter/wiki/Obtaining-Token-and-Channel-IDs)
 4. Run the appropriate run script
 
 ## Sending emojis
 
 send `` `[emoji-name]` `` or `` `[emoji-name] [size]` `` where `[size]` is one of `16, 32, 64, ..., 512`
+
+e.g. `` `weirdchamp` `` or `` `weirdchamp 256` ``
+
+Send the `weirdchamp` emoji, first using the currently configured size, second explicitly using size `256`
 
 If editing is enabled the bot will edit the message to be the desired emote, if editing is disabled the bot will delete the message and send a new one with the emote
 
