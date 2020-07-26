@@ -9,10 +9,21 @@ from discord.ext import commands
 
 bot = commands.Bot(command_prefix="``", self_bot=True)
 
-emoji = {}
+emojis = {}
 
 config_parser = ConfigParser()
 
+sizes = [16, 32, 64, 128, 256]
+
+def to_int(s: str) -> int:
+    try:
+        i = int(s)
+    except:
+        raise ValueError(f"[{s}] is not a number")
+    if i in sizes:
+        return i
+    else:
+        raise ValueError(f"[{s}] is not in {sizes}")
 
 def config(attr: Optional[str] = None):
     if attr:
@@ -23,15 +34,18 @@ def config(attr: Optional[str] = None):
 
 def save_emojis():
     with open("emojis.dict", "w") as file:
-        for k, v in emoji.items():
+        for k, v in emojis.items():
             file.write(f"{k} : {v}\n")
 
 
 def read_emojis():
-    with open("emojis.dict", "r") as file:
-        for line in file:
-            k, v = line.strip().split(" : ")
-            emoji[k] = v
+    if os.path.isfile("emojis.dict"):
+        with open("emojis.dict", "r") as file:
+            for line in file:
+                k, v = line.strip().split(" : ")
+                emojis[k] = v
+    else:
+        raise EnvironmentError("File [emojis.dict] does not exist, not loading")
 
 
 def save_config():
@@ -71,11 +85,14 @@ def main():
         )
     )
 
-    read_emojis()
+    try:
+        read_emojis()
 
-    print(crayons.green(f"Loaded [{len(emoji)}] emojis"))
+        print(crayons.green(f"Loaded [{len(emojis)}] emojis"))
 
-    print(crayons.cyan(str(list(emoji.keys()))))
+        print(crayons.cyan(str(list(emojis.keys()))))
+    except EnvironmentError as enve:
+        print(crayons.yellow(enve))
 
     try:
         bot.run(token(), bot=False)
@@ -97,7 +114,7 @@ async def flush(ctx):
 async def add(ctx, name, link):
     try:
         print(crayons.yellow(f"Registering emoji [{name}] with [{link}]"))
-        emoji[name.strip()] = re.sub("&size=\d{2,3}", "", link.strip())
+        emojis[name.strip()] = re.sub(r"&size=\d{2,3}", "", link.strip())
     finally:
         await ctx.message.delete()
 
@@ -106,9 +123,9 @@ async def add(ctx, name, link):
 async def delete(ctx, name):
     try:
         name = name.strip()
-        if name in emoji:
+        if name in emojis:
             print(crayons.yellow(f"Deleting emoji [{name}]"))
-            del emoji[name.strip()]
+            del emojis[name.strip()]
         else:
             print(crayons.red(f"There is no emoji named [{name}]"))
     finally:
@@ -120,12 +137,12 @@ async def rename(ctx, original, newname):
     try:
         original = original.strip()
         newname = newname.strip()
-        if newname in emoji:
+        if newname in emojis:
             print(crayons.red(f"Emoji [{newname}] already exists!"))
-        elif original in emoji:
+        elif original in emojis:
             print(crayons.yellow(f"Renaming emoji [{original}] to [{newname.strip()}]"))
-            emoji[newname.strip()] = emoji[original]
-            del emoji[original]
+            emojis[newname.strip()] = emojis[original]
+            del emojis[original]
         else:
             print(crayons.red(f"There is no emoji named [{original}]"))
     finally:
@@ -136,14 +153,13 @@ async def rename(ctx, original, newname):
 async def size(ctx, size: Optional[str]):
     if size:
         try:
-            _size = int(size)
-            if _size % 2 == 0:
-                print(crayons.yellow(f"Setting emoji size to {size}"))
-                config()["size"] = size
-            else:
-                print(crayons.red(f"[{size}] is not a power of two"))
-        except:
-            print(crayons.red(f"[{size}] is not a number"))
+            _size = to_int(size)
+            print(crayons.yellow(f"Setting emoji size to {size}"))
+            config()["size"] = size
+        except ValueError as ve:
+            print(crayons.red(f"Error parsing input: {ve}"))
+        except Exception as e:
+            print(crayons.red(f"An exception occured: {e}"))
         finally:
             await ctx.message.delete()
     else:
@@ -153,13 +169,18 @@ async def size(ctx, size: Optional[str]):
 @bot.command(aliases=["list"])
 async def _list(ctx):
     # await ctx.message.delete()
-    await ctx.send(f"There are `[{len(emoji)}]` emojis: `{list(emoji.keys())}`")
+    await ctx.send(f"There are `[{len(emojis)}]` emojis: `{list(emojis.keys())}`")
 
+@bot.command()
+async def slist(ctx):
+    try:
+        print(crayons.cyan(f"There are `[{len(emojis)}]` emojis: `{list(emojis.keys())}`"))
+    finally:
+        await ctx.message.delete()
 
 @bot.event
 async def on_command_error(ctx, error):
     print(crayons.red(error))
-    # await ctx.message.delete()
 
 
 @bot.event
@@ -172,39 +193,41 @@ async def on_message(message):
     if message.author != bot.user:
         return
 
-    if not re.match("`[\w ]+`", message.content):
-        await bot.process_commands(message)
-        return
+    async def do_emoji(content, size = None):
 
-    content = message.content.strip().replace("`", "").strip()
+        if content not in emojis:
+            return
 
-    print(content)
+        if not size:
+            size = config().getint('size')
 
-    size = config().getint('size')
+        emoji = emojis[content] + f"&size={size}"
 
-    if len(spl := content.split(' ')) == 2:
+        if config().getboolean("edit"):
+
+            await message.edit(content=emoji)
+
+        else:
+
+            await message.delete()
+
+            await message.channel.send(emoji)
+
+    content = message.content.strip()
+
+    if match := re.match(r"`(\w+) (\d+)`", content):
         try:
-            print(spl)
-            size = int(spl[1])
-            content = spl[0]
+            await do_emoji(match.group(1), to_int(match.group(2)))
         except Exception as e:
-            print(e)
-            print(crayons.red("uh oh.."))
-
-    if content not in emoji:
-        return
-
-    e = emoji[content] + f"&size={size}"
-
-    if config().getboolean("edit"):
-
-        await message.edit(content=e)
-
+            if type(e) == ValueError:
+                print(crayons.red(f"Error parsing input: {e}"))
+            else:
+                print(crayons.red(f"Unknown exception: {e}"))
+            await message.delete()
+    elif match := re.match(r"`([\w ]+)`", content):
+        await do_emoji(match.group(1))
     else:
-
-        await message.delete()
-
-        await message.channel.send(e)
+        await bot.process_commands(message)
 
 
 if __name__ == "__main__":
