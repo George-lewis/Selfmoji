@@ -15,7 +15,7 @@ With selfmoji you can have your own custom emojis in Discord.
 
 ## Sending emojis
 
-send `\`[emoji-name]\`` or ``[emoji-name] [size]`` where `[size]` is one of `16, 32, 64, ..., 512`
+send `` `[emoji-name]` `` or `` `[emoji-name] [size]` `` where `[size]` is one of `16, 32, 64, ..., 512`
 
 If editing is enabled the bot will edit the message to be the desired emote, if editing is disabled the bot will delete the message and send a new one with the emote
 
