@@ -18,6 +18,8 @@ emojis = {}
 
 config_parser = ConfigParser()
 
+config_parser["selfmoji"] = {"size": "64", "edit": "yes"}
+
 
 def to_int(s: str) -> int:
     try:
@@ -84,11 +86,7 @@ def main():
         print(crayons.green("Read config file"))
     except EnvironmentError as enve:
         print(crayons.yellow(enve))
-        print(crayons.yellow("Setting defaults..."))
-        config_parser['selfmoji'] = {
-            'size': '64',
-            'edit': 'yes'
-        }
+        print(crayons.yellow("Using defaults..."))
 
     print(crayons.green(f"Emoji size: [{config().getint('size')}]"))
 
@@ -199,13 +197,19 @@ async def edit(ctx, opt: Optional[bool] = None):
 
 @bot.command(aliases=["list"])
 async def _list(ctx):
-    await ctx.message.edit(f"There are `[{len(emojis)}]` emojis: ```{', '.join(emojis.keys())}```")
+    await ctx.message.edit(
+        f"There are `[{len(emojis)}]` emojis: ```{', '.join(emojis.keys())}```"
+    )
 
 
 @bot.command()
 async def slist(ctx):
     try:
-        print(crayons.cyan(f"There are [{len(emojis)}] emojis: {', '.join(emojis.keys())}"))
+        print(
+            crayons.cyan(
+                f"There are [{len(emojis)}] emojis: {', '.join(emojis.keys())}"
+            )
+        )
     finally:
         await ctx.message.delete()
 
