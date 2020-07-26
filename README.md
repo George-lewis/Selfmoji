@@ -43,7 +43,7 @@ The bot uses the prefix `` as it's not likely to collide with anything else
 
 ``` ``add [emoji-name] [emoji-link] ```
 
-e.g. ``add sparklecat https://cdn.discordapp.com/emojis/654099753340239872.gif
+e.g. ``` ``add sparklecat https://cdn.discordapp.com/emojis/654099753340239872.gif ```
 
 ![laugh](https://i.imgur.com/fuCfyS2.gif)
 
