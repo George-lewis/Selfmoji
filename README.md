@@ -12,9 +12,15 @@ send ``[emoji-name]`` or ``[emoji-name] [size]`` where `[size]` is one of `16, 3
 
 If editing is enabled the bot will edit the message to be the desired emote, if editing is disabled the bot will delete the message and send a new one with the emote
 
+If using the first form, the bot uses the currently configured size
+
 ## How Does it Work?
 
-Selfmoji is a self-bot, it listens to your messages and when you type ``emoji-name`` it will edit your message and put in a link to an emoji.
+Selfmoji is a self-bot, it listens to your messages and acts accordingly. The bot links a discord emoji and sets the size using a URL parameter.
+
+## The Problem with Mobile
+
+In classic Discord:tm: fashion mobile doesn't handle this particularly well, while desktop Discord will size the emotes properly mobile finds the need to increase the size arbitrarily.
 
 ## Share Emojis
 
