@@ -6,22 +6,74 @@ Do you like Discord? Do you like using emojis? Do you not like paying for Nitro:
 
 With selfmoji you can have your own custom emojis in Discord.
 
+## Sending emojis
+
+send ``[emoji-name]`` or ``[emoji-name] [size]`` where `[size]` is one of `16, 32, 64, ..., 512`
+
+If editing is enabled the bot will edit the message to be the desired emote, if editing is disabled the bot will delete the message and send a new one with the emote
+
 ## How Does it Work?
 
 Selfmoji is a self-bot, it listens to your messages and when you type ``emoji-name`` it will edit your message and put in a link to an emoji.
-
-## Add Emoji on-the-fly
-
-Selfmoji allows you to add emoji from within discord.
-
-The command is ```add [emoji-name] [link]`
-
-![laugh](https://i.imgur.com/fuCfyS2.gif)
-
-![console](https://i.imgur.com/YAsz9oC.png)
 
 ## Share Emojis
 
 Selfmoji saves emoji in a file called `emojis.dict` in the format `emoji-name : link`
 
 You can add emojis here manually and share with friends
+
+## Commands
+
+The bot uses the prefix `` as it's not likely to collide with anything else
+
+### Add Emoji
+
+```add [emoji-name] [emoji-link]`
+
+e.g. ```add sparklecat https://cdn.discordapp.com/emojis/654099753340239872.gif`
+
+![laugh](https://i.imgur.com/fuCfyS2.gif)
+
+### Delete Emoji
+
+```remove [emoji-name]`
+
+### Rename Emoji
+
+```rename [current-name] [new-name]`
+
+### List Available Emoji
+
+```list`
+
+> Sends a message into the current chat listing all the emojis
+
+```slist`
+
+> **S**ilent list, sends a list of all emoji into the console
+
+### Set Emoji Size
+
+```size [pixel-size]`
+
+Where `[pixel-size]` is one of `16, 32, 64, 128, 256, 512`
+
+### Get the current size
+
+```size`
+
+> Sends a message to the current chat
+
+### Enable / Disable Message Editing
+
+```edit`
+
+> Toggles
+
+```edit [true|yes|on]`
+
+> Enables editing
+
+```edit [false|no|off]`
+
+> Disables editing
