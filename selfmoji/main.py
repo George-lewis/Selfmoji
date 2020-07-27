@@ -198,7 +198,7 @@ async def edit(ctx, opt: Optional[bool] = None):
 @bot.command(aliases=["list"])
 async def _list(ctx):
     await ctx.message.edit(
-        f"There are `[{len(emojis)}]` emojis: ```{', '.join(emojis.keys())}```"
+        content=f"There are `[{len(emojis)}]` emojis: ```{', '.join(emojis.keys())}```"
     )
 
 
