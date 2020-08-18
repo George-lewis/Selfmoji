@@ -6,6 +6,8 @@ Do you like Discord? Do you like using emojis? Do you not like paying for Nitro:
 
 With selfmoji you can have your own custom emojis in Discord.
 
+Warning: This operates through a selfbot which is against the Discord ToS
+
 ## Installing
 
 1. Clone repository
