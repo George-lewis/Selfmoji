@@ -178,26 +178,21 @@ async def size(ctx, _size: Optional[str] = None):
         finally:
             await ctx.message.delete()
     else:
-        await ctx.edit(content=f"Emoji size is `[{config('size')}]`")
+        await ctx.message.edit(content=f"Emoji size is `[{config('size')}]`")
 
 @bot.command()
 async def autoflush(ctx, opt: Optional[bool] = None):
     def text():
         return 'enabled' if config().getboolean('autoflush') else 'disabled'
-    try:
-        if opt is None:
-            await ctx.edit(content=f"Autoflush is `[{text()}]`")
+    if opt is None:
+        await ctx.message.edit(content=f"Autoflush is `[{text()}]`")
+    else:
+        if opt:
+            config()["autoflush"] = "yes"
         else:
-            if opt:
-                config()["autoflush"] = "yes"
-            else:
-                config()["autoflush"] = "no"
+            config()["autoflush"] = "no"
 
-            print(crayons.cyan(f"{text().capitalize()} autoflush"))
-            
-    finally:
-        
-        await ctx.message.delete()
+        print(crayons.cyan(f"{text().capitalize()} autoflush"))
 
 @bot.command()
 async def edit(ctx, opt: Optional[bool] = None):
@@ -219,10 +214,7 @@ async def edit(ctx, opt: Optional[bool] = None):
 def search_emojis(term: str = None) -> str:
     if term:
         keys = emojis.keys()
-        print(f"term: {term}, keys: {keys}")
-        matches = [key for key in keys if term in keys]
-        print(matches)
-        if matches:
+        if (matches := [key for key in keys if term in key]):
             return f"There are [{len(matches)}] emojis matching the search [{term}]: ```{', '.join(matches)}```"
         return "No matches"
 
