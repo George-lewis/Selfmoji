@@ -10,7 +10,7 @@ TOKEN_ENV_KEY = "DISCORD_TOKEN"
 TOKEN_FILE = "TOKEN"
 EMOJI_FILE = "emojis.dict"
 CONFIG_FILE = "config.ini"
-SIZES = {16, 32, 64, 128, 256, 512}
+SIZES = {16, 32, 64, 128, 256}
 
 bot = commands.Bot(command_prefix="``", self_bot=True)
 
@@ -18,7 +18,7 @@ emojis = {}
 
 config_parser = ConfigParser()
 
-config_parser["selfmoji"] = {"size": "64", "edit": "yes"}
+config_parser["selfmoji"] = {"size": "64", "edit": "yes", "autoflush": "false"}
 
 
 def to_int(s: str) -> int:
@@ -115,12 +115,13 @@ def main():
 
 
 @bot.command()
-async def flush(ctx):
+async def flush(ctx=None):
     try:
         save_emojis()
         print(crayons.green("Saved emojis"))
     finally:
-        await ctx.message.delete()
+        if ctx:
+            await ctx.message.delete()
 
 
 @bot.command()
@@ -130,9 +131,11 @@ async def add(ctx, name, link):
         emojis[name.strip()] = re.sub(r"&size=\d{2,3}", "", link.strip())
     finally:
         await ctx.message.delete()
+    if config().getboolean('autoflush'):
+        flush()
 
 
-@bot.command()
+@bot.command(aliases=["remove"])
 async def delete(ctx, name):
     try:
         name = name.strip()
@@ -145,7 +148,7 @@ async def delete(ctx, name):
         await ctx.message.delete()
 
 
-@bot.command()
+@bot.command(aliases=["move"])
 async def rename(ctx, original, newname):
     try:
         original = original.strip()
@@ -174,8 +177,26 @@ async def size(ctx, _size: Optional[str] = None):
         finally:
             await ctx.message.delete()
     else:
-        await ctx.send(f"Emoji size is `[{config('size')}]`")
+        await ctx.edit(content=f"Emoji size is `[{config('size')}]`")
 
+@bot.command()
+async def autoflush(ctx, opt: Optional[bool] = None):
+    def text():
+        return 'enabled' if config().getboolean('autoflush') else 'disabled'
+    try:
+        if opt is None:
+            await ctx.edit(content=f"Autoflush is `[{text()}]`")
+        else:
+            if opt:
+                config()["autoflush"] = "yes"
+            else:
+                config()["autoflush"] = "no"
+
+            print(crayons.cyan(f"{text().capitalize()} autoflush"))
+            
+    finally:
+        
+        await ctx.message.delete()
 
 @bot.command()
 async def edit(ctx, opt: Optional[bool] = None):
@@ -194,22 +215,29 @@ async def edit(ctx, opt: Optional[bool] = None):
         print(crayons.cyan(f"Changed edit to [{config().getboolean('edit')}]"))
         await ctx.message.delete()
 
+def search_emojis(term: str = None) -> str:
+    if term:
+        keys = emojis.keys()
+        print(f"term: {term}, keys: {keys}")
+        matches = [key for key in keys if term in keys]
+        print(matches)
+        if matches:
+            return f"There are [{len(matches)}] emojis matching the search [{term}]: ```{', '.join(matches)}```"
+        return "No matches"
 
-@bot.command(aliases=["list"])
-async def _list(ctx):
+    return f"There are `[{len(emojis)}]` emojis: ```{', '.join(emojis.keys())}```"
+
+@bot.command(aliases=["list", "search"])
+async def _list(ctx, term: Optional[str]):
     await ctx.message.edit(
-        content=f"There are `[{len(emojis)}]` emojis: ```{', '.join(emojis.keys())}```"
+        content=search_emojis(term)
     )
 
 
-@bot.command()
-async def slist(ctx):
+@bot.command(aliases=['ssearch'])
+async def slist(ctx, term: Optional[str]):
     try:
-        print(
-            crayons.cyan(
-                f"There are [{len(emojis)}] emojis: {', '.join(emojis.keys())}"
-            )
-        )
+        print(crayons.cyan(search_emojis(term)))
     finally:
         await ctx.message.delete()
 
