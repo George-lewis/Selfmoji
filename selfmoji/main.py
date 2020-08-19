@@ -146,6 +146,8 @@ async def delete(ctx, name):
             print(crayons.red(f"There is no emoji named [{name}]"))
     finally:
         await ctx.message.delete()
+    if config().getboolean('autoflush'):
+        flush()
 
 
 @bot.command(aliases=["move"])
