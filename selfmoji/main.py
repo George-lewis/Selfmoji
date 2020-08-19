@@ -194,28 +194,29 @@ async def autoflush(ctx, opt: Optional[bool] = None):
 
         print(crayons.cyan(f"{text().capitalize()} autoflush"))
 
+        await ctx.message.delete()
+
 @bot.command()
 async def edit(ctx, opt: Optional[bool] = None):
-    try:
-        if opt is None:
-            if config().getboolean("edit"):
-                config()["edit"] = "no"
-            else:
-                config()["edit"] = "yes"
+    def text():
+        return 'enabled' if config().getboolean('edit') else 'disabled'
+    if opt is None:
+        await ctx.message.edit(
+            content=f"Editing is `[{text()}]`"
+        )
+    else:
+        if opt:
+            config()["edit"] = "yes"
         else:
-            if opt:
-                config()["edit"] = "yes"
-            else:
-                config()["edit"] = "no"
-    finally:
-        print(crayons.cyan(f"Changed edit to [{config().getboolean('edit')}]"))
+            config()["edit"] = "no"
+        print(crayons.cyan(f"{text().capitalize()} editing"))
         await ctx.message.delete()
 
 def search_emojis(term: str = None) -> str:
     if term:
         keys = emojis.keys()
         if (matches := [key for key in keys if term in key]):
-            return f"There are [{len(matches)}] emojis matching the search [{term}]: ```{', '.join(matches)}```"
+            return f"There are `[{len(matches)}]` emojis matching the search `[{term}]`: ```{', '.join(matches)}```"
         return "No matches"
 
     return f"There are `[{len(emojis)}]` emojis: ```{', '.join(emojis.keys())}```"
