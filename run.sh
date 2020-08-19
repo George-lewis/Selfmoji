@@ -1,3 +1,3 @@
 #!/bin/sh
 
-pipenv run selfmoji/main.py
+pipenv run python selfmoji/main.py

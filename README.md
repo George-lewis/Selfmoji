@@ -6,6 +6,8 @@ Do you like Discord? Do you like using emojis? Do you not like paying for Nitro:
 
 With selfmoji you can have your own custom emojis in Discord.
 
+Warning: This operates through a selfbot which is against the Discord ToS
+
 ## Installing
 
 1. Clone repository
@@ -32,7 +34,9 @@ Selfmoji is a self-bot, it listens to your messages and acts accordingly. The bo
 
 ## The Problem with Mobile
 
-In classic Discord:tm: fashion mobile doesn't handle this particularly well, while desktop Discord will size the emotes properly mobile finds the need to increase the size arbitrarily.
+~~In classic Discord:tm: fashion mobile doesn't handle this particularly well, while desktop Discord will size the emotes properly mobile finds the need to increase the size arbitrarily.~~
+
+They fixed it!
 
 ## Share Emojis
 

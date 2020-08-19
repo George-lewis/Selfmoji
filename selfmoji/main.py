@@ -169,9 +169,10 @@ async def rename(ctx, original, newname):
 async def size(ctx, _size: Optional[str] = None):
     if _size:
         try:
-            __size = to_int(size)
+            # Todo: __size is unused
+            __size = to_int(_size)
             print(crayons.yellow(f"Setting emoji size to {__size}"))
-            config()["size"] = __size
+            config()["size"] = _size
         except ValueError as ve:
             print(crayons.red(f"Error parsing input: {ve}"))
         finally:
