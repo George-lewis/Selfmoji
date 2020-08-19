@@ -131,7 +131,7 @@ async def add(ctx, name, link):
         emojis[name.strip()] = re.sub(r"&size=\d{2,3}", "", link.strip())
     finally:
         await ctx.message.delete()
-    if config().getboolean('autoflush'):
+    if config().getboolean("autoflush"):
         flush()
 
 
@@ -146,7 +146,7 @@ async def delete(ctx, name):
             print(crayons.red(f"There is no emoji named [{name}]"))
     finally:
         await ctx.message.delete()
-    if config().getboolean('autoflush'):
+    if config().getboolean("autoflush"):
         flush()
 
 
@@ -182,10 +182,12 @@ async def size(ctx, _size: Optional[str] = None):
     else:
         await ctx.message.edit(content=f"Emoji size is `[{config('size')}]`")
 
+
 @bot.command()
 async def autoflush(ctx, opt: Optional[bool] = None):
     def text():
-        return 'enabled' if config().getboolean('autoflush') else 'disabled'
+        return "enabled" if config().getboolean("autoflush") else "disabled"
+
     if opt is None:
         await ctx.message.edit(content=f"Autoflush is `[{text()}]`")
     else:
@@ -198,14 +200,14 @@ async def autoflush(ctx, opt: Optional[bool] = None):
 
         await ctx.message.delete()
 
+
 @bot.command()
 async def edit(ctx, opt: Optional[bool] = None):
     def text():
-        return 'enabled' if config().getboolean('edit') else 'disabled'
+        return "enabled" if config().getboolean("edit") else "disabled"
+
     if opt is None:
-        await ctx.message.edit(
-            content=f"Editing is `[{text()}]`"
-        )
+        await ctx.message.edit(content=f"Editing is `[{text()}]`")
     else:
         if opt:
             config()["edit"] = "yes"
@@ -214,23 +216,23 @@ async def edit(ctx, opt: Optional[bool] = None):
         print(crayons.cyan(f"{text().capitalize()} editing"))
         await ctx.message.delete()
 
+
 def search_emojis(term: str = None) -> str:
     if term:
         keys = emojis.keys()
-        if (matches := [key for key in keys if term in key]):
+        if (matches := [key for key in keys if term in key]) :
             return f"There are `[{len(matches)}]` emojis matching the search `[{term}]`: ```{', '.join(matches)}```"
         return "No matches"
 
     return f"There are `[{len(emojis)}]` emojis: ```{', '.join(emojis.keys())}```"
 
+
 @bot.command(aliases=["list", "search"])
 async def _list(ctx, term: Optional[str]):
-    await ctx.message.edit(
-        content=search_emojis(term)
-    )
+    await ctx.message.edit(content=search_emojis(term))
 
 
-@bot.command(aliases=['ssearch'])
+@bot.command(aliases=["ssearch"])
 async def slist(ctx, term: Optional[str]):
     try:
         print(crayons.cyan(search_emojis(term)))
