@@ -41,6 +41,7 @@ def save_emojis():
     with open(EMOJI_FILE, "w") as file:
         for k, v in emojis.items():
             file.write(f"{k} : {v}\n")
+    print(crayons.green("Saved emojis"))
 
 
 def read_emojis():
@@ -115,10 +116,9 @@ def main():
 
 
 @bot.command()
-async def flush(ctx=None):
+async def flush(ctx):
     try:
         save_emojis()
-        print(crayons.green("Saved emojis"))
     finally:
         if ctx:
             await ctx.message.delete()
@@ -132,7 +132,7 @@ async def add(ctx, name, link):
     finally:
         await ctx.message.delete()
     if config().getboolean("autoflush"):
-        flush()
+        save_emojis()
 
 
 @bot.command(aliases=["remove"])
