@@ -97,6 +97,12 @@ def main():
         )
     )
 
+    print(
+            crayons.green(
+                f"Autoflush is {'enabled' if config().getboolean('autoflush') else 'disabled'}"
+            )
+    )
+
     try:
         read_emojis()
 
