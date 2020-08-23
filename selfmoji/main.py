@@ -89,7 +89,14 @@ def main():
         logger.warning(enve)
 
     try:
-        bot.run(token(), bot=False)
+        tok = token()
+    except ValueError as ve:
+        logger.exception(ve)
+        tok = input(crayons.cyan("Please enter your token: "))
+        config.token = tok
+
+    try:
+        bot.run(tok, bot=False)
     finally:
         logger.info("SAVING EMOJIS")
         save_emojis()
