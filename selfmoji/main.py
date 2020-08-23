@@ -1,7 +1,11 @@
 import os
 import re
-from configparser import ConfigParser
+import logging
+# from configparser import ConfigParser
+from config import Config
 from typing import Optional
+
+from utils import setup_logging
 
 import crayons
 from discord.ext import commands
@@ -9,17 +13,28 @@ from discord.ext import commands
 TOKEN_ENV_KEY = "DISCORD_TOKEN"
 TOKEN_FILE = "TOKEN"
 EMOJI_FILE = "emojis.dict"
-CONFIG_FILE = "config.ini"
+CONFIG_FILE = "config.json"
 SIZES = {16, 32, 64, 128, 256}
 
-bot = commands.Bot(command_prefix="``", self_bot=True)
+setup_logging()
+
+logger = logging.getLogger('MAIN')
+
+logger.setLevel(logging.INFO)
+
+config = Config(CONFIG_FILE)
+
+config.load()
+
+logger.info(f"Emoji size: [{config.size}]")
+
+logger.info(f"Message editing is {'enabled' if config.edit else 'disabled'}")
+
+logger.info(f"Autoflush is {'enabled' if config.autoflush else 'disabled'}")
+
+bot = commands.Bot(command_prefix=config.prefix, self_bot=True)
 
 emojis = {}
-
-config_parser = ConfigParser()
-
-config_parser["selfmoji"] = {"size": "64", "edit": "yes", "autoflush": "false"}
-
 
 def to_int(s: str) -> int:
     try:
@@ -31,17 +46,11 @@ def to_int(s: str) -> int:
     raise ValueError(f"[{s}] is not in {SIZES}")
 
 
-def config(attr: Optional[str] = None):
-    if attr:
-        return config_parser["selfmoji"][attr]
-    return config_parser["selfmoji"]
-
-
 def save_emojis():
     with open(EMOJI_FILE, "w") as file:
         for k, v in emojis.items():
             file.write(f"{k} : {v}\n")
-    print(crayons.green("Saved emojis"))
+    logger.info("Saved emojis")
 
 
 def read_emojis():
@@ -54,24 +63,15 @@ def read_emojis():
         raise EnvironmentError(f"File [{EMOJI_FILE}] does not exist, not loading")
 
 
-def save_config():
-    with open(CONFIG_FILE, "w") as file:
-        config_parser.write(file)
-
-
-def read_config():
-    if os.path.isfile(CONFIG_FILE):
-        config_parser.read(CONFIG_FILE)
-    else:
-        raise EnvironmentError(f"File [{CONFIG_FILE}] does not exist, not loading")
-
-
 def token() -> str:
+    if tok := config.token:
+        logger.info("Loading token from config file")
+        return tok
     if tok := os.getenv(TOKEN_ENV_KEY):
-        print(crayons.green("Loading token from environment"))
+        logger.info("Loading token from environment")
         return tok
     if os.path.isfile(TOKEN_FILE):
-        print(crayons.green("Loading token from file"))
+        logger.info("Loading token from file")
         with open(TOKEN_FILE, "r") as file:
             return file.read().strip()
     raise ValueError("Could not get token")
@@ -79,46 +79,24 @@ def token() -> str:
 
 def main():
 
-    print(crayons.green("Starting"))
-
-    try:
-        read_config()
-
-        print(crayons.green("Read config file"))
-    except EnvironmentError as enve:
-        print(crayons.yellow(enve))
-        print(crayons.yellow("Using defaults..."))
-
-    print(crayons.green(f"Emoji size: [{config().getint('size')}]"))
-
-    print(
-        crayons.green(
-            f"Message editing is {'enabled' if config().getboolean('edit') else 'disabled'}"
-        )
-    )
-
-    print(
-            crayons.green(
-                f"Autoflush is {'enabled' if config().getboolean('autoflush') else 'disabled'}"
-            )
-    )
+    logger.info("Starting")
 
     try:
         read_emojis()
 
-        print(crayons.green(f"Loaded [{len(emojis)}] emojis"))
+        logger.info(f"Loaded [{len(emojis)}] emojis")
 
-        print(crayons.cyan(str(list(emojis.keys()))))
+        print(crayons.cyan(list(emojis.keys())))
     except EnvironmentError as enve:
-        print(crayons.yellow(enve))
+        logger.warning(enve)
 
     try:
         bot.run(token(), bot=False)
     finally:
-        print(crayons.red("SAVING EMOJIS"))
+        logger.info("SAVING EMOJIS")
         save_emojis()
-        print(crayons.red("SAVING CONFIG"))
-        save_config()
+        logger.info("SAVING CONFIG")
+        config.save()
 
 
 @bot.command()
@@ -133,11 +111,11 @@ async def flush(ctx):
 @bot.command()
 async def add(ctx, name, link):
     try:
-        print(crayons.yellow(f"Registering emoji [{name}] with [{link}]"))
+        logger.info(f"Registering emoji [{name}] with [{link}]")
         emojis[name.strip()] = re.sub(r"&size=\d{2,3}", "", link.strip())
     finally:
         await ctx.message.delete()
-    if config().getboolean("autoflush"):
+    if config.autoflush:
         save_emojis()
 
 
@@ -146,14 +124,14 @@ async def delete(ctx, name):
     try:
         name = name.strip()
         if name in emojis:
-            print(crayons.yellow(f"Deleting emoji [{name}]"))
+            logger.info(f"Deleting emoji [{name}]")
             del emojis[name.strip()]
         else:
-            print(crayons.red(f"There is no emoji named [{name}]"))
+            logger.error(f"There is no emoji named [{name}]")
     finally:
         await ctx.message.delete()
-    if config().getboolean("autoflush"):
-        flush()
+    if config.autoflush:
+        save_emojis()
 
 
 @bot.command(aliases=["move"])
@@ -162,13 +140,13 @@ async def rename(ctx, original, newname):
         original = original.strip()
         newname = newname.strip()
         if newname in emojis:
-            print(crayons.red(f"Emoji [{newname}] already exists!"))
+            logger.warning(f"Emoji [{newname}] already exists!")
         elif original in emojis:
-            print(crayons.yellow(f"Renaming emoji [{original}] to [{newname.strip()}]"))
+            logger.warning(f"Renaming emoji [{original}] to [{newname.strip()}]")
             emojis[newname.strip()] = emojis[original]
             del emojis[original]
         else:
-            print(crayons.red(f"There is no emoji named [{original}]"))
+            logger.error(f"There is no emoji named [{original}]")
     finally:
         await ctx.message.delete()
 
@@ -179,30 +157,27 @@ async def size(ctx, _size: Optional[str] = None):
         try:
             # Todo: __size is unused
             __size = to_int(_size)
-            print(crayons.yellow(f"Setting emoji size to {__size}"))
-            config()["size"] = _size
+            logger.warning(f"Setting emoji size to {__size}")
+            config.size = _size
         except ValueError as ve:
-            print(crayons.red(f"Error parsing input: {ve}"))
+            logger.error(f"Error parsing input: {ve}")
         finally:
             await ctx.message.delete()
     else:
-        await ctx.message.edit(content=f"Emoji size is `[{config('size')}]`")
+        await ctx.message.edit(content=f"Emoji size is `[{config.size}]`")
 
 
 @bot.command()
 async def autoflush(ctx, opt: Optional[bool] = None):
     def text():
-        return "enabled" if config().getboolean("autoflush") else "disabled"
+        return "enabled" if config.autoflush else "disabled"
 
     if opt is None:
         await ctx.message.edit(content=f"Autoflush is `[{text()}]`")
     else:
-        if opt:
-            config()["autoflush"] = "yes"
-        else:
-            config()["autoflush"] = "no"
+        config.autoflush = opt
 
-        print(crayons.cyan(f"{text().capitalize()} autoflush"))
+        logger.info(f"{text().capitalize()} autoflush")
 
         await ctx.message.delete()
 
@@ -210,16 +185,13 @@ async def autoflush(ctx, opt: Optional[bool] = None):
 @bot.command()
 async def edit(ctx, opt: Optional[bool] = None):
     def text():
-        return "enabled" if config().getboolean("edit") else "disabled"
+        return "enabled" if config.edit else "disabled"
 
     if opt is None:
         await ctx.message.edit(content=f"Editing is `[{text()}]`")
     else:
-        if opt:
-            config()["edit"] = "yes"
-        else:
-            config()["edit"] = "no"
-        print(crayons.cyan(f"{text().capitalize()} editing"))
+        config.edit = opt
+        logger.info(f"{text().capitalize()} editing")
         await ctx.message.delete()
 
 
@@ -248,12 +220,11 @@ async def slist(ctx, term: Optional[str]):
 
 @bot.event
 async def on_command_error(ctx, error):
-    print(crayons.red(error))
-
+    logger.error(f"Command Error: {error}")
 
 @bot.event
-async def on_ready():
-    print(crayons.green("ready!"))
+async def on_connect():
+    logger.info("Connected")
 
 
 @bot.event
@@ -267,11 +238,11 @@ async def on_message(message):
             return
 
         if not _size:
-            _size = config().getint("size")
+            _size = config.size
 
         emoji = emojis[content] + f"&size={_size}"
 
-        if config().getboolean("edit"):
+        if config.edit:
 
             await message.edit(content=emoji)
 
@@ -288,9 +259,9 @@ async def on_message(message):
             await do_emoji(match.group(1), to_int(match.group(2)))
         except Exception as e:
             if isinstance(e, ValueError):
-                print(crayons.red(f"Error parsing input: {e}"))
+                logger.error(f"Error parsing input: {e}")
             else:
-                print(crayons.red(f"Unknown exception: {e}"))
+                logger.error(f"Unknown exception: {e}")
             await message.delete()
     elif match := re.match(r"`([\w ]+)`", content):
         await do_emoji(match.group(1))
