@@ -13,11 +13,17 @@ Warning: This operates through a selfbot which is against the Discord ToS
 1. Clone repository
 2. `pipenv sync`
 3. Supply your token:
-  3.1 Place your token in a file named `TOKEN`
-  3.2 Create an environment variable `DISCORD_TOKEN`
-  3.3 Place it in the config file
-    - Bot will prompt you on first run
-  - How do I get my token?: [Guide](https://github.com/Tyrrrz/DiscordChatExporter/wiki/Obtaining-Token-and-Channel-IDs)
+
+    3.1 Place your token in a file named `TOKEN`
+
+    3.2 Create an environment variable `DISCORD_TOKEN`
+
+    3.3 Place it in the config file
+
+      - Bot will prompt you on first run
+
+    - How do I get my token?: [Guide](https://github.com/Tyrrrz/DiscordChatExporter/wiki/Obtaining-Token-and-Channel-IDs)
+
 4. Run the appropriate run script
 
 ## Sending emojis
