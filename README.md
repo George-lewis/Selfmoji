@@ -62,7 +62,8 @@ If your file looks like:
 
 ```
 [emoji-name] : https://cdn.discordapp.com/emojis/...
-...```
+...
+```
 
 Then please migrate to the new scheme using the included tool: `pipenv run python selfmoji/migrate.py [your-emojis-file]`
 
