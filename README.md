@@ -18,7 +18,7 @@ Warning: This operates through a selfbot which is against the Discord ToS
 
 ## Sending emojis
 
-send `` `[emoji-name]` `` or `` `[emoji-name] [size]` `` where `[size]` is one of `16, 32, 64, ..., 512`
+send `` `[emoji-name]` `` or `` `[emoji-name] [size]` `` where `[size]` is one of `16, 32, 64, 128, 256`
 
 e.g. `` `weirdchamp` `` or `` `weirdchamp 256` ``
 
@@ -44,6 +44,18 @@ Selfmoji saves emoji in a file called `emojis.dict` in the format `emoji-name : 
 
 You can add emojis here manually and share with friends
 
+## Migrating The Emojis File
+
+Selfmoji has recently been updated to store its emojis in a different format
+
+If your file looks like:
+
+```
+[emoji-name] : https://cdn.discordapp.com/emojis/...
+...```
+
+Then please migrate to the new scheme using the included tool: `pipenv run python selfmoji/migrate.py [your-emojis-file]`
+
 ## Commands
 
 The bot uses the prefix `` as it's not likely to collide with anything else
@@ -60,19 +72,35 @@ e.g. ``` ``add sparklecat https://cdn.discordapp.com/emojis/654099753340239872.g
 
 ``` ``remove [emoji-name] ```
 
+``` ``delete [emoji-name] ```
+
 ### Rename Emoji
 
 ``` ``rename [current-name] [new-name] ```
+
+``` ``move [current-name] [new-name] ```
 
 ### List Available Emoji
 
 ``` ``list ```
 
+``` ``search ```
+
 > Sends a message into the current chat listing all the emojis
+
+``` ``list|search pog ```
+
+> Sends a message into the current chat with all emojis matching the search "pog"
 
 ``` ``slist ```
 
+``` ``ssearch ```
+
 > **S**ilent list, sends a list of all emoji into the console
+
+``` ``slist|ssearch pog ```
+
+> Sends a message into the console with all emojis matching the search "pog"
 
 ### Set Emoji Size
 
@@ -88,10 +116,6 @@ Where `[pixel-size]` is one of `16, 32, 64, 128, 256, 512`
 
 ### Enable / Disable Message Editing
 
-``` ``edit ```
-
-> Toggles editing
-
 ``` ``edit [true|yes|on] ```
 
 > Enables editing
@@ -99,3 +123,24 @@ Where `[pixel-size]` is one of `16, 32, 64, 128, 256, 512`
 ``` ``edit [false|no|off] ```
 
 > Disables editing
+
+### Get Editing Status
+
+``` ``edit ```
+
+> Sends a message to the current chat
+
+
+### Enable / Disable Autoflush
+
+``` ``autoflush [true|yes|on] ```
+
+``` ``autoflush [false|no|off] ```
+
+> Autoflushing saves the emojis file every time you add / delete / rename emojis
+
+### Get Autoflush Status
+
+``` ``autoflush ```
+
+> Sends a message to the current chat
