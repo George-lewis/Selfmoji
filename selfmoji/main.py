@@ -1,9 +1,7 @@
-import os
-import re
-import logging
-from config import Config
+import os, re, logging
 from typing import Optional
 
+from config import Config
 from utils import setup_logging
 
 import crayons
