@@ -1,8 +1,13 @@
 import logging, crayons
 
+
 def setup_logging():
 
-    logging.basicConfig(format="%(levelname)s:%(name)s:%(asctime)s: %(message)s", datefmt='%I:%M:%S:%p', level=logging.ERROR)
+    logging.basicConfig(
+        format="%(levelname)s:%(name)s:%(asctime)s: %(message)s",
+        datefmt="%I:%M:%S:%p",
+        level=logging.ERROR,
+    )
 
     old_record_factory = logging.getLogRecordFactory()
 

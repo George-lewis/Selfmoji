@@ -1,7 +1,6 @@
 import os
 import re
 import logging
-# from configparser import ConfigParser
 from config import Config
 from typing import Optional
 
@@ -18,7 +17,7 @@ SIZES = {16, 32, 64, 128, 256}
 
 setup_logging()
 
-logger = logging.getLogger('MAIN')
+logger = logging.getLogger("MAIN")
 
 logger.setLevel(logging.INFO)
 
@@ -35,6 +34,7 @@ logger.info(f"Autoflush is {'enabled' if config.autoflush else 'disabled'}")
 bot = commands.Bot(command_prefix=config.prefix, self_bot=True)
 
 emojis = {}
+
 
 def to_int(s: str) -> int:
     try:
@@ -221,6 +221,7 @@ async def slist(ctx, term: Optional[str]):
 @bot.event
 async def on_command_error(ctx, error):
     logger.error(f"Command Error: {error}")
+
 
 @bot.event
 async def on_connect():
