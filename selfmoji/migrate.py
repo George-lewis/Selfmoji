@@ -1,13 +1,14 @@
 import sys, os, crayons
 from utils import extract_emoji
 
+
 def main():
 
-    filename = sys.argv[1] if len(sys.argv) > 1 else 'emojis.dict'
+    filename = sys.argv[1] if len(sys.argv) > 1 else "emojis.dict"
 
     if os.path.isfile(filename):
         emojis = {}
-        with open(filename, 'r') as file:
+        with open(filename, "r") as file:
             for line in file:
                 k, v = line.strip().split(" : ")
                 emojis[k] = v
