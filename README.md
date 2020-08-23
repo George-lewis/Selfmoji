@@ -24,7 +24,7 @@ Warning: This operates through a selfbot which is against the Discord ToS
 
       - Bot will prompt you on first run
 
-4. Run the appropriate run script
+4. Run the appropriate `run` script
 
 ## Sending emojis
 
