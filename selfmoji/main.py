@@ -109,8 +109,7 @@ async def flush(ctx):
     try:
         save_emojis()
     finally:
-        if ctx:
-            await ctx.message.delete()
+        await ctx.message.delete()
 
 
 @bot.command()
