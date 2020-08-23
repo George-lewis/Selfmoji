@@ -25,9 +25,9 @@ config.load()
 
 logger.info(f"Emoji size: [{config.size}]")
 
-logger.info(f"Message editing is {'enabled' if config.edit else 'disabled'}")
+logger.info(f"Message editing is [{'enabled' if config.edit else 'disabled'}]")
 
-logger.info(f"Autoflush is {'enabled' if config.autoflush else 'disabled'}")
+logger.info(f"Autoflush is [{'enabled' if config.autoflush else 'disabled'}]")
 
 bot = commands.Bot(command_prefix=config.prefix, self_bot=True)
 
