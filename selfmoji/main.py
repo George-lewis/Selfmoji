@@ -2,7 +2,7 @@ import os, re, logging
 from typing import Optional
 
 from config import Config
-from utils import setup_logging
+from utils import setup_logging, extract_emoji
 
 import crayons
 from discord.ext import commands
@@ -110,7 +110,10 @@ async def flush(ctx):
 async def add(ctx, name, link):
     try:
         logger.info(f"Registering emoji [{name}] with [{link}]")
-        emojis[name.strip()] = re.sub(r"&size=\d{2,3}", "", link.strip())
+        if digits := extract_emoji(link):
+            emojis[name.strip()] = digits
+        else:
+            logger.error("Couldn't register emoji")
     finally:
         await ctx.message.delete()
     if config.autoflush:
@@ -239,7 +242,7 @@ async def on_message(message):
         if not _size:
             _size = config.size
 
-        emoji = emojis[content] + f"&size={_size}"
+        emoji = f"https://cdn.discordapp.com/emojis/{emojis[content]}?v=1&size={_size}"
 
         if config.edit:
 

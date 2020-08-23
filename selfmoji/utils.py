@@ -1,5 +1,10 @@
-import logging, crayons
+import logging, crayons, re
+from typing import Optional
 
+def extract_emoji(url: str) -> Optional[str]:
+    if match := re.search(r'\d{18}\.(png|gif)', url):
+        return match.group()
+    return None
 
 def setup_logging():
 
